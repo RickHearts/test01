@@ -1,38 +1,41 @@
 pipeline {
-  agent any
+  agent none
   stages {
-    stage('Chrome') {
+    stage('Build & Test ') {
+      steps {
+        sh 'mvn -Dmaven.test.failure.ignore clean packag'
+        stash(name: 'build-test-artifacts', includes: '**/target/surefire-reports/TEST-*.xml,target/*.jar')
+      }
+    }
+
+    stage('Report & Publish') {
       parallel {
-        stage('Chrome') {
+        stage('Report & Publish') {
+          agent {
+            node {
+              label 'docker'
+            }
+
+          }
           steps {
-            echo 'Chrome Tests'
+            unstash 'build-test-artifacts'
+            junit '**/target/surefire-reports/TEST-*.xml'
+            archiveArtifacts 'onlyIfSuccessful: true, artifacts: \'target/*.jar'
           }
         }
 
-        stage('Firefox') {
+        stage('Publishing') {
+          agent {
+            node {
+              label 'docker'
+            }
+
+          }
           steps {
-            echo 'Firefox Tests'
+            echo 'wroking'
           }
         }
 
-      }
-    }
-
-    stage('Edge / Print Message ') {
-      steps {
-        echo 'edge'
-      }
-    }
-
-    stage('sleep') {
-      steps {
-        sleep 4
-      }
-    }
-
-    stage('') {
-      steps {
-        input(message: 'approve me ', ok: 'continue')
       }
     }
 
