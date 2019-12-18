@@ -30,5 +30,11 @@ pipeline {
       }
     }
 
+    stage('') {
+      steps {
+        input(message: 'approve me ', ok: 'continue')
+      }
+    }
+
   }
 }
