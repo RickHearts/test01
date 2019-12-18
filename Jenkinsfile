@@ -18,5 +18,11 @@ pipeline {
       }
     }
 
+    stage('Edge / Print Message ') {
+      steps {
+        echo 'edge'
+      }
+    }
+
   }
 }
